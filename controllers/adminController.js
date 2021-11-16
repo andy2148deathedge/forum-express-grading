@@ -4,8 +4,10 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const db = require('../models')
 const Restaurant = db.Restaurant
+const User = db.User
 
 const adminController = {
+  // Restaurant
   getRestaurants: (req, res) => {
     return Restaurant.findAll( {raw: true} ).then(restaurants => {
       return res.render('admin/restaurants', {restaurants}) 
@@ -117,6 +119,27 @@ const adminController = {
         restaurant.destroy()
           .then(restaurant => res.redirect('/admin/restaurants'))
       })
+  },
+
+  // User
+  getUsers: (req, res) => {
+    return User.findAll( {raw: true} ).then(users => {
+      return res.render('admin/users', {users}) 
+    })
+  },
+
+  toggleAdmin: (req, res) => { 
+    const { id } = req.params
+    return User.findByPk(id).then(user => {
+      if (user.email === 'root@example.com') {
+        req.flash('error_messages', '禁止變更管理者權限')
+        return res.redirect('back')
+      }
+
+      user.update({ isAdmin: !user.isAdmin })
+      req.flash('success_messages', '使用者權限變更成功')
+      return res.redirect('/admin/users')
+    })
   }
 }
 
