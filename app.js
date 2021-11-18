@@ -13,7 +13,10 @@ const app = express()
 const port = process.env.PORT || 3000 
 
 
-app.engine('handlebars', handlebars({ defaultLayout: 'main' }))
+app.engine('handlebars', handlebars({ 
+  defaultLayout: 'main', 
+  helpers: require('./config/handlebars-helpers') 
+}))
 app.set('view engine', 'handlebars')
 app.use(express.urlencoded({ extended: true }))
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }))

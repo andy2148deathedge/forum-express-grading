@@ -3,6 +3,7 @@ const upload = multer({ dest: 'temp/' })
 
 const restController = require('../controllers/restController')
 const adminController = require('../controllers/adminController')
+const categoryController = require('../controllers/categoryController.js')
 const userController = require('../controllers/userController')
 
 const helpers = require('../_helpers')
@@ -25,7 +26,7 @@ module.exports = (app, passport) => {
   // user
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
   app.get('/restaurants', authenticated, restController.getRestaurants)
-
+  
   // administrator <=> restaurant
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
@@ -35,7 +36,13 @@ module.exports = (app, passport) => {
   app.get('/admin/restaurants/:id/edit', authenticatedAdmin, adminController.editRestaurant)
   app.put('/admin/restaurants/:id', authenticatedAdmin, upload.single('image'), adminController.putRestaurant)
   app.delete('/admin/restaurants/:id', authenticatedAdmin, adminController.deleteRestaurant)
-  // administrator User
+  // administrator <=> Categories
+  app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories)
+  app.post('/admin/categories', authenticatedAdmin, categoryController.postCategory)
+  app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
+  app.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategory)
+  app.delete('/admin/categories/:id', authenticatedAdmin, categoryController.deleteCategory)
+  // administrator <=> User
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers)
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin)
 
