@@ -4,6 +4,7 @@ const upload = multer({ dest: 'temp/' })
 const restController = require('../controllers/restController')
 const adminController = require('../controllers/adminController')
 const categoryController = require('../controllers/categoryController.js')
+const commentController = require('../controllers/commentController')
 const userController = require('../controllers/userController')
 
 const helpers = require('../_helpers')
@@ -37,12 +38,15 @@ module.exports = (app, passport) => {
   app.get('/admin/restaurants/:id/edit', authenticatedAdmin, adminController.editRestaurant)
   app.put('/admin/restaurants/:id', authenticatedAdmin, upload.single('image'), adminController.putRestaurant)
   app.delete('/admin/restaurants/:id', authenticatedAdmin, adminController.deleteRestaurant)
-  // administrator <=> Categories
+  // administrator <=> Category
   app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories)
   app.post('/admin/categories', authenticatedAdmin, categoryController.postCategory)
   app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
   app.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategory)
   app.delete('/admin/categories/:id', authenticatedAdmin, categoryController.deleteCategory)
+  // administrator <=> Comment
+  app.post('/comments', authenticatedAdmin, commentController.postComment)
+  app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
   // administrator <=> User
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers)
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin)
