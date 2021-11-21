@@ -24,7 +24,6 @@
   </div>
 
   <div class="card-body row">
-    {{#if user.Comments}}
     {{#each user.Comments}}
     <div class="col-1">
       <a href="/restaurant/{{this.RestaurantId}}" class="">
@@ -32,6 +31,5 @@
       </a>
     </div>
     {{/each}}
-    {{/if}}
   </div>
 </div>
