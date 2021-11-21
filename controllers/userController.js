@@ -1,8 +1,12 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
 const User = db.User
+const helpers = require('../_helpers')
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
+  // signin, signup
   signUpPage: (req, res) => {
     return res.render('signup')
   },
@@ -43,6 +47,60 @@ const userController = {
     req.flash('success_messages', '成功登出!')
     req.logout()
     res.redirect('/signin')
+  },
+
+  // profile
+  getUser: (req, res) => {
+    return User.findByPk(req.params.id)
+      .then(user => res.render('profile', { user: user.toJSON() }))
+  },
+
+  editUser: (req, res) => {
+    if ( Number(req.params.id) !== helpers.getUser(req).id ) {
+      req.flash('error_messages', '無權對該用戶profile進行操作!')
+      return res.redirect(`/users/${helpers.getUser(req).id}`)
+    }
+
+    return User.findByPk(req.params.id)
+      .then(user => res.render('edit', { user: user.toJSON() }))
+  },
+
+  putUser: async (req, res) => {
+    try {
+      // name chk
+      if (!req.body.name) {
+        req.flash('error_messages', '未輸入名字!')
+        return res.redirect('back')
+      }
+
+      // whether file or not
+      const { file } = req
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, async (err, img) => {
+          const user = await User.findByPk(req.params.id)
+          await user.update({
+            ...req.body,
+            image: file ? img.data.link : user.image
+          })
+        })
+      } else {
+        const user = await User.findByPk(req.params.id)
+        await user.update({
+          ...req.body,
+          image: user.image
+        })
+      }
+
+      // redirect
+      req.flash('success_messages', '使用者資料編輯成功')
+      return res.redirect(`/users/${req.params.id}`)
+    } 
+    
+    catch (err) {
+      req.flash('error_messages', 'oops! Something wrong in profile editing.')
+      return res.redirect('back')
+    }
   }
 }
 

@@ -1,0 +1,19 @@
+<div class="card">
+  <div class="card-body row">
+    <div class="col-3">
+      {{#if user.image}}
+      <img src="{{ user.image }}" style="max-width: 100%">
+      {{else}}
+      <img src="https://assets-lighthouse.s3.amazonaws.com/uploads/image/file/6227/restaurant-list-logo.png" style="max-width: 100%">
+      {{/if}}
+    </div>
+    <div class="col-9 ">
+      <h1>{{ user.name }}</h1>
+      <p><b>{{ user.email }}</b></p>
+      <p><b>5 已評論餐廳</b></p>
+      {{#ifCond user.id operator.id}}
+      <a class="btn btn-primary mt-5" href="/users/{{user.id}}/edit">edit</a>
+      {{/ifCond}}
+    </div>
+  </div>
+</div>

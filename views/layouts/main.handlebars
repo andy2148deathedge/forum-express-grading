@@ -3,8 +3,9 @@
  <head>
    <meta charset="utf-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <title>餐廳評論網</title>
    <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>餐廳評論網</title>
+   <link rel="shortcut icon" href="https://assets-lighthouse.s3.amazonaws.com/uploads/image/file/6227/restaurant-list-logo.png" type="image/x-icon">
    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
  </head>
  <body>
@@ -15,12 +16,12 @@
       <ul class="navbar-nav mr-auto">
       </ul>
       <div>
-        {{#if user.isAdmin}}
+        {{#if operator.isAdmin}}
           <a href="/admin" style="color: white;margin-right: 10px;">Admin 後台</a>
         {{/if}}
-        {{#if user}}
-          <span style="color: white;margin-right: 10px;">Hi, {{user.email}}</span>
-          <a href="/users/{{user.id}}" style="color: white;margin-right: 10px;">Profile</a>
+        {{#if operator}}
+          <span style="color: white;margin-right: 10px;">Hi, {{operator.email}}</span>
+          <a href="/users/{{operator.id}}" style="color: white;margin-right: 10px;">Profile</a>
           <a href="/logout"><button class="btn btn-outline-success my-2 my-sm-0">LogOut</button></a>
         {{/if}}
       </div>
