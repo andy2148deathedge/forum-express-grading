@@ -3,8 +3,10 @@ const db = require('../models')
 const User = db.User
 const Restaurant = db.Restaurant
 const Comment = db.Comment
+const Favorite = db.Favorite
 const helpers = require('../_helpers')
 const imgur = require('imgur-node-api')
+const restaurant = require('../models/restaurant')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
@@ -105,6 +107,27 @@ const userController = {
       req.flash('error_messages', 'oops! Something wrong in profile editing.')
       return res.redirect('back')
     }
+  },
+
+  addFavorite: (req, res) => {
+    return Favorite.create({
+      UserId: req.user.id,
+      RestaurantId: req.params.restaurantId
+    })
+    .then(restaurant => res.redirect('back') )
+  },
+
+  removeFavorite: (req, res) => {
+    return Favorite.findOne({
+      where: {
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      }
+    })
+    .then(favorite => {
+      favorite.destroy()
+      .then(restaurant => res.redirect('back') )
+    })
   }
 }
 
