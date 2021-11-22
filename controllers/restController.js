@@ -60,14 +60,17 @@ const restController = {
     return Restaurant.findByPk(req.params.id, { 
       include: [ Category, { model: Comment, include: [User] }] 
     })
+    .then(restaurant => restaurant.increment('viewCounts'))
     .then(restaurant => res.render('restaurant', { restaurant: restaurant.toJSON() }))
+    .catch(err => res.redirect('back'))
   },
 
   getDashBoard: (req, res) => {
     return Restaurant.findByPk(req.params.id, { 
-      include: [ Category, { model: Comment, include: [User] }] 
+      include: [ Category, { model: Comment }] 
     })
     .then(restaurant => res.render('dashboard', { restaurant: restaurant.toJSON() }))
+    .catch(err => res.redirect('back'))
   },
 
   getFeeds: (req, res) => {
