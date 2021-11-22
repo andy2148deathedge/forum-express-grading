@@ -63,6 +63,13 @@ const restController = {
     .then(restaurant => res.render('restaurant', { restaurant: restaurant.toJSON() }))
   },
 
+  getDashBoard: (req, res) => {
+    return Restaurant.findByPk(req.params.id, { 
+      include: [ Category, { model: Comment, include: [User] }] 
+    })
+    .then(restaurant => res.render('dashboard', { restaurant: restaurant.toJSON() }))
+  },
+
   getFeeds: (req, res) => {
     return Promise.all([ Restaurant.findAll({
       limit: 10,
@@ -81,7 +88,6 @@ const restController = {
       return res.render('feeds', { restaurants, comments })
     })
   }
-
 
 }
 module.exports = restController 

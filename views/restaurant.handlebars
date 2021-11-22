@@ -17,6 +17,7 @@
   </div>
   <div class="col-md-8">
     <p>{{restaurant.description}}</p>
+    <a class="btn btn-primary mt-1" href="/restaurants/{{restaurant.id}}/dashboard">Dashboard</a>
   </div>
   <hr>
 </div>
@@ -48,4 +49,6 @@
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-<a href="javascript:history.back()"></a>
+<div class="mt-5">
+  <a href="javascript:history.back()">回上一頁</a>
+</div>
