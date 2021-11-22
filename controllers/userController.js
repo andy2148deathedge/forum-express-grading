@@ -55,6 +55,7 @@ const userController = {
   getUser: (req, res) => {
     User.findByPk(req.params.id, { include: { model: Comment, include: Restaurant }})
     .then(user => res.render('profile', { user: user.toJSON() }))
+    .catch(err => res.redirect('back') )
   },
 
   editUser: (req, res) => {
@@ -65,6 +66,7 @@ const userController = {
 
     return User.findByPk(req.params.id)
       .then(user => res.render('edit', { user: user.toJSON() }))
+      .catch(err => res.redirect('back') )
   },
 
   putUser: async (req, res) => {
@@ -75,7 +77,7 @@ const userController = {
         return res.redirect('back')
       }
 
-      // whether file or not
+      // if file or not
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)

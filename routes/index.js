@@ -24,10 +24,12 @@ module.exports = (app, passport) => {
     return res.redirect('/signin')
   }
 
-  // user
+  // restaurant
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
   app.get('/restaurants', authenticated, restController.getRestaurants)
-  app.get('/restaurant/:id', authenticated, restController.getRestaurant)
+  app.get('/restaurants/feeds', authenticated, restController.getFeeds)
+  app.get('/restaurants/:id', authenticated, restController.getRestaurant)
+  // user
   app.get('/users/:id', authenticated, userController.getUser)
   app.get('/users/:id/edit', authenticated, userController.editUser)
   app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
