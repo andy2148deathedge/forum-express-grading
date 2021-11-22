@@ -3,6 +3,8 @@ const Restaurant = db.Restaurant
 const Category = db.Category
 const Comment = db.Comment
 const User = db.User
+const Favorite = db.Favorite
+const helpers = require('../_helpers')
 
 const pageLimit = 10
 const restController = {
@@ -36,7 +38,8 @@ const restController = {
         ...r.dataValues,
         description: r.dataValues.description.substring(0, 50),
         categoryName: r.Category.name,
-        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id)
+        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+        isLiked: req.user.LikedRestaurants.map(d => d.id).includes(r.id)
       }))
 
       // process
@@ -62,22 +65,36 @@ const restController = {
       include: [ 
         Category, 
         { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' },
         { model: Comment, include: [User] }
       ] 
     })
     .then(restaurant => restaurant.increment('viewCounts'))
     .then(restaurant => {
-     const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
-     return res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited })
+     const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(helpers.getUser(req).id)
+     const isLiked = restaurant.LikedUsers.map(d => d.id).includes(helpers.getUser(req).id)
+     return res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited, isLiked })
     })
     .catch(err => res.redirect('back'))
   },
 
   getDashBoard: (req, res) => {
-    return Restaurant.findByPk(req.params.id, { 
-      include: [ Category, { model: Comment }] 
+    return Promise.all([
+      Restaurant.findByPk(req.params.id, { 
+        include: [ Category, { model: Comment }] 
+      }), 
+      Favorite.findAndCountAll({
+        where: { RestaurantId: req.params.id },
+        raw: true,
+        nest: true
+      }) 
+    ])
+    .then(([restaurant, favorites]) => {
+      return res.render('dashboard', {
+        restaurant: restaurant.toJSON(),
+        favorites
+      })
     })
-    .then(restaurant => res.render('dashboard', { restaurant: restaurant.toJSON() }))
     .catch(err => res.redirect('back'))
   },
 
