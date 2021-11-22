@@ -53,7 +53,7 @@ const userController = {
 
   // profile
   getUser: (req, res) => {
-    User.findByPk(req.params.id, { include: { model: Comment, include: Restaurant }})
+    return User.findByPk(req.params.id, { include: { model: Comment, include: Restaurant }})
     .then(user => res.render('profile', { user: user.toJSON() }))
     .catch(err => res.redirect('back') )
   },
