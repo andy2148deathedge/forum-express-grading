@@ -5,6 +5,7 @@ const Restaurant = db.Restaurant
 const Comment = db.Comment
 const Favorite = db.Favorite
 const Like = db.Like
+const Followship = db.Followship
 const helpers = require('../_helpers')
 const imgur = require('imgur-node-api')
 // const restaurant = require('../models/restaurant')
@@ -147,6 +148,46 @@ const userController = {
       }
     })
     .then( restaurant => res.redirect('back') )    
+  },
+
+  getTopUser: (req, res) => {
+    // 先撈所有帶有 Followers 的 Users table 資料
+    return User.findAll({ include: [ { model: User, as: 'Followers' } ] })
+    .then(users => {
+      // 整理撈到的 users 資料，製作 users 陣列
+      users = users.map(user => ({
+        ...user.dataValues,
+        FollowerCount: user.Followers.length, // 計算追蹤人數
+        isFollowed: req.user.Followings.map(dataUser => dataUser.id).includes(user.id) // 比對當前使用者是否追蹤該 user
+      }))
+
+      // 整理並得到 users array 後對該 array 進行需要的排序 (按人氣)
+      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
+
+      // 渲染
+      return res.render('topUser', { users })
+    })
+  },
+
+  addFollowing: (req, res) => {
+    return Followship.create({
+      followerId: req.user.id,
+      followingId: req.params.userId
+    })
+    .then(followship => {
+      return res.redirect('back')
+    })
+  },
+
+  removeFollowing: (req, res) => {
+    return Followship.findOne({where: {
+      followerId: req.user.id,
+      followingId: req.params.userId
+    } })
+    .then(followship => {
+      followship.destroy()
+      .then(followship => res.redirect('back'))
+    })
   }
 }
 
