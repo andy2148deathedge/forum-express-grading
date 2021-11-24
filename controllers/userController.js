@@ -120,16 +120,13 @@ const userController = {
   },
 
   removeFavorite: (req, res) => {
-    return Favorite.findOne({
+    return Favorite.destroy({
       where: {
         UserId: req.user.id,
         RestaurantId: req.params.restaurantId
       }
     })
-    .then(favorite => {
-      favorite.destroy()
-      .then(restaurant => res.redirect('back') )
-    })
+    .then(favorite => res.redirect('back') )
   },
 
   addLike: (req, res) => {
@@ -150,25 +147,6 @@ const userController = {
     .then( restaurant => res.redirect('back') )    
   },
 
-  getTopUser: (req, res) => {
-    // 先撈所有帶有 Followers 的 Users table 資料
-    return User.findAll({ include: [ { model: User, as: 'Followers' } ] })
-    .then(users => {
-      // 整理撈到的 users 資料，製作 users 陣列
-      users = users.map(user => ({
-        ...user.dataValues,
-        FollowerCount: user.Followers.length, // 計算追蹤人數
-        isFollowed: req.user.Followings.map(dataUser => dataUser.id).includes(user.id) // 比對當前使用者是否追蹤該 user
-      }))
-
-      // 整理並得到 users array 後對該 array 進行需要的排序 (按人氣)
-      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
-
-      // 渲染
-      return res.render('topUser', { users })
-    })
-  },
-
   addFollowing: (req, res) => {
     return Followship.create({
       followerId: req.user.id,
@@ -187,6 +165,25 @@ const userController = {
     .then(followship => {
       followship.destroy()
       .then(followship => res.redirect('back'))
+    })
+  },
+
+  getTopUser: (req, res) => {
+    // 先撈所有帶有 Followers 的 Users table 資料
+    return User.findAll({ include: [ { model: User, as: 'Followers' } ] })
+    .then(users => {
+      // 整理撈到的 users 資料，製作 users 陣列
+      users = users.map(user => ({
+        ...user.dataValues,
+        FollowerCount: user.Followers.length, // 計算追蹤人數
+        isFollowed: req.user.Followings.map(dataUser => dataUser.id).includes(user.id) // 比對當前使用者是否追蹤該 user
+      }))
+
+      // 整理並得到 users array 後對該 array 進行需要的排序 (按人氣)
+      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
+
+      // 渲染
+      return res.render('topUser', { users })
     })
   }
 }

@@ -115,7 +115,22 @@ const restController = {
     .then(([restaurants, comments]) => {
       return res.render('feeds', { restaurants, comments })
     })
-  }
+  },
 
+  getTopRestaurant: (req, res) => {
+    return Restaurant.findAll({ include: [ { model: User, as: 'FavoritedUsers' } ] })
+    .then(restaurants => {
+      restaurants = restaurants.map(restaurant => ({
+        ...restaurant.dataValues,
+        favoritedCount: restaurant.FavoritedUsers.length, // 計算追蹤人數
+        isFavorited: helpers.getUser(req).FavoritedRestaurants.map(dataRestaurant => dataRestaurant.id).includes(restaurant.id)
+      }))
+      
+      // findAll 資料全部撈出後 再排序 再切10筆 應該效率較差 之後再研究怎麼直接從資料庫撈排好的10筆
+      restaurants = restaurants.sort((a, b) => b.favoritedCount - a.favoritedCount).slice(0, 10)
+
+      return res.render('topRestaurant', { restaurants })
+    })
+  }
 }
 module.exports = restController 
