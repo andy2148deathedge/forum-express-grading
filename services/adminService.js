@@ -17,6 +17,14 @@ const adminService = {
     return Restaurant.findByPk(req.params.id,  { include: [Category] })
     .then(restaurant => cb( { restaurant: restaurant.toJSON() } ))
   },
+
+  deleteRestaurant: (req, res, cb) => {
+    return Restaurant.findByPk(req.params.id)
+      .then(restaurant => 
+        restaurant.destroy()
+        .then(cb( { status: 'success',  message: '' } ))
+      )
+  },
 }
 
 module.exports = adminService
