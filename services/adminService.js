@@ -15,10 +15,7 @@ const adminService = {
 
   getRestaurant: (req, res, cb) => {
     return Restaurant.findByPk(req.params.id,  { include: [Category] })
-    .then(restaurant => { 
-      restaurant = restaurant.toJSON()
-      return cb( { restaurant } ) 
-    })
+    .then(restaurant => cb( { restaurant: restaurant.toJSON() } ))
   },
 }
 
