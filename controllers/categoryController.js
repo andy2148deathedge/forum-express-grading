@@ -8,7 +8,7 @@ let categoryController = {
     categoryService.getCategories(req, res, data => 
       res.render('admin/categories', data )
     )
-  },
+  }, // 已改
 
   postCategory: (req, res) => {
     if (!req.body.name) {

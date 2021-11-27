@@ -13,6 +13,39 @@ const adminService = {
       .then(restaurants => cb( { restaurants } ))
   },
 
+  postRestaurant: (req, res, cb) => {
+    if (!req.body.name) 
+    return cb({ status: 'error', message: "name didn't exist" })
+
+    const { file } = req
+    if (file) {
+      imgur.setClientID(IMGUR_CLIENT_ID)
+      imgur.upload(file.path, (err, img) => {
+        return Restaurant.create({
+          name: req.body.name,
+          tel: req.body.tel,
+          address: req.body.address,
+          opening_hours: req.body.opening_hours,
+          description: req.body.description,
+          image: file ? img.data.link : null,
+          CategoryId: req.body.categoryId
+        })
+        .then((restaurant) => cb({ status: 'success', message: 'restaurant was successfully created' }))
+      })
+    } else {
+      return Restaurant.create({
+        name: req.body.name,
+        tel: req.body.tel,
+        address: req.body.address,
+        opening_hours: req.body.opening_hours,
+        description: req.body.description,
+        image: null,
+        CategoryId: req.body.categoryId
+      })
+      .then(restaurant => cb({ status: 'success', message: 'restaurant was successfully created' }))
+    }
+  },
+
   getRestaurant: (req, res, cb) => {
     return Restaurant.findByPk(req.params.id,  { include: [Category] })
     .then(restaurant => cb( { restaurant: restaurant.toJSON() } ))

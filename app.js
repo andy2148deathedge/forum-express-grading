@@ -9,6 +9,7 @@ const helpers = require('./_helpers')
 const session = require('express-session')
 const passport = require('./config/passport')
 const db = require('./models')
+const bodyParser = require('body-parser')
 const app = express()
 const port = process.env.PORT || 3000 
 
@@ -19,6 +20,7 @@ app.engine('handlebars', handlebars({
 }))
 app.set('view engine', 'handlebars')
 app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }))
 app.use(passport.initialize())
 app.use(passport.session())
