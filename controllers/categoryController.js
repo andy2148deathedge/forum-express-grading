@@ -1,4 +1,5 @@
 const db = require('../models')
+const adminService = require('../services/adminService')
 const Category = db.Category
 
 const categoryService = require('../services/categoryService')
@@ -11,42 +12,31 @@ let categoryController = {
   }, // 已改
 
   postCategory: (req, res) => {
-    if (!req.body.name) {
-      req.flash('error_messages', 'name didn\'t exist')
+    categoryService.postCategory(req, res, data => {
+      if (data['status'] === 'error')
       return res.redirect('back')
-    } else {
-      return Category.create({
-        name: req.body.name
-      })
-      .then(category => res.redirect('/admin/categories'))
-    }
-  },
+
+      req.flash('success_messages', data['message'])
+      return res.redirect('/admin/categories')
+    })
+  }, // 已改
 
   putCategory: (req, res) => {
-    if (!req.body.name) {
-      req.flash('error_messages', 'name didn\'t exist')
+    categoryService.putCategory(req, res, data => {
+      if (data['status'] === 'error')
       return res.redirect('back')
-    } else {
-      return Category.findByPk(req.params.id)
-        .then((category) => {
-          category.update(req.body)
-            .then((category) => 
-              res.redirect('/admin/categories')
-            )
-        })
-    }
-  },
+
+      req.flash('success_messages', data['message'])
+      return res.redirect('/admin/categories')
+    })
+  }, // 已改
 
   deleteCategory: (req, res) => {
-    return Category.findByPk(req.params.id)
-      .then(category => {
-        category.destroy()
-          .then(category =>
-            res.redirect('/admin/categories')
-          )
-      })
-  }
-
+    categoryService.deleteCategory(req, res, data => {
+      req.flash('success_messages', data['message'])
+      return res.redirect('/admin/categories')
+    })
+  } // 已改
 }
 
 module.exports = categoryController

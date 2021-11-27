@@ -62,7 +62,7 @@ const adminController = {
       req.flash('success_messages', data['message'])
       return res.redirect('/admin/restaurants')
     })
-  },
+  }, // 已改
 
   deleteRestaurant: (req, res) => {
     adminService.deleteRestaurant(req, res, data => {
